@@ -1,5 +1,7 @@
 import unittest
 from unittest.mock import Mock
+
+from application.api_models import Demand
 from application.demand_history_handler import DemandHistoryHandler
 
 
@@ -19,8 +21,9 @@ class TestDemandHistoryHandler(unittest.TestCase):
     def test_get_complete_demand_history_returns_correct_history(self):
         demand_history_db = Mock()
         elevator_id = 1
-        expected_demand_history = [{'elevator_id': 1, 'rest_floor': 2, 'demanded_floor': 3}]
-        demand_history_db.get_demand_history.return_value = expected_demand_history
+        mock_demand_history = [(1, 1, 2, 3)]
+        expected_demand_history = [Demand(resting_floor=2, demanded_floor=3).model_dump()]
+        demand_history_db.get_demand_history.return_value = mock_demand_history
         handler = DemandHistoryHandler(demand_history_db)
 
         result = handler.get_complete_demand_history(elevator_id)
