@@ -3,7 +3,8 @@ from exception.invalid_floor_error import InvalidFloorError
 
 
 class Elevator(object):
-    def __init__(self, elevator_id, first_floor, last_floor, current_floor=None, ideal_resting_floor=None):
+    def __init__(self, elevator_id, first_floor, last_floor,
+                 current_floor=None, ideal_resting_floor=None):
         self._id = elevator_id
 
         if not first_floor < last_floor:

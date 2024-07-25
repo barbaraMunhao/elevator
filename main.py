@@ -3,14 +3,10 @@ from application.demand_history_handler import DemandHistoryHandler
 from model.elevator import Elevator
 from db.demand_history_db import DemandHistoryDB
 from db import database
-from pydantic import BaseModel
+
+from application.api_models import *
 
 from fastapi import FastAPI
-
-
-class DemandRequest(BaseModel):
-    demanded_floor: int
-
 
 # Initialize the database
 database_file = "database.db"
@@ -32,20 +28,28 @@ elevator_demander = ElevatorDemander(elevator, demand_history_handler)
 app = FastAPI()
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
-
-
 # Define the endpoint for the /demand
 @app.post("/demand")
 async def demand(request: DemandRequest):
-    elevator_demander.demand(request.demanded_floor)
-    return {"message": "Elevator demanded successfully"}
+    if request.elevator_id == elevator.id:
+        elevator_demander.demand(request.demanded_floor)
+        return {"message": "Elevator demanded successfully"}
+    return {"message": "Elevator not found"}
+
+
+# Define the endpoint for the /update_ideal_resting_floor
+@app.patch("/update_ideal_resting_floor")
+async def update_ideal_resting_floor(request: ElevatorIdealRestingFloorRequest):
+    if request.elevator_id == elevator.id:
+        elevator.ideal_floor = request.ideal_floor
+        return {"message": "Ideal resting floor updated successfully"}
+    return {"message": "Elevator not found"}
 
 
 # Define the endpoint for the /complete_demand_history
-@app.get("/complete_demand_history")
-async def complete_demand_history():
-    demand_history = demand_history_handler.get_complete_demand_history(elevator.id)
-    return demand_history
+@app.get("/complete_demand_history/{elevator_id}")
+async def complete_demand_history(elevator_id: int):
+    if elevator_id == elevator.id:
+        demand_history = demand_history_handler.get_complete_demand_history(elevator.id)
+        return demand_history
+    return {"message": "Elevator not found"}

@@ -23,9 +23,6 @@ def create_demand_table(connection):
              "elevator_id INT, rest_floor INT, demanded_floor INT)")
     try:
         cursor.execute(query)
-        #todo - revome test
-        res = cursor.execute("SELECT name FROM sqlite_master")
-        print(res.fetchone())
     except sqlite3.Error as e:
         print(e)
 
