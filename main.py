@@ -3,7 +3,7 @@ from application.demand_history_handler import DemandHistoryHandler
 from model.elevator import Elevator
 from db.demand_history_db import DemandHistoryDB
 from db import database
-
+import random
 from application.api_models import *
 
 from fastapi import FastAPI
@@ -27,6 +27,17 @@ elevator_demander = ElevatorDemander(elevator, demand_history_handler)
 # Create an instance of the FastAPI class
 app = FastAPI()
 
+# Define the endpoint for the /generate_demand
+@app.post("/generate_multiple_demands")
+async def generate_multiple_demands(request: MultipleDemandsRequest):
+    for i in range(request.num_demand):
+        demanded_floor = random.randint(elevator.first_floor, elevator.last_floor)
+        elevator_demander.demand(demanded_floor)
+        change_ideal_resting_floor = random.randint(0, 1)
+        if change_ideal_resting_floor:
+            ideal_floor = random.randint(elevator.first_floor, elevator.last_floor)
+            elevator.ideal_floor = ideal_floor
+    return {"message": "{0} Demands generated successfully".format(request.num_demand)}
 
 # Define the endpoint for the /demand
 @app.post("/demand")
