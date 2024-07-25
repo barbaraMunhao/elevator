@@ -10,8 +10,10 @@ class ElevatorIdealRestingFloorRequest(BaseModel):
     elevator_id: int
     ideal_floor: int
 
+
 class MultipleDemandsRequest(BaseModel):
     num_demand: int
+
 
 class Demand(BaseModel):
     resting_floor: int

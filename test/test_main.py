@@ -39,3 +39,14 @@ async def test_complete_demand_history():
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
+
+@pytest.mark.asyncio
+async def test_generate_multiple_demands():
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        num_demand = 5
+
+        response = await ac.post("/generate_multiple_demands", json={"num_demand": num_demand})
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "{0} Demands generated successfully".format(num_demand)}
